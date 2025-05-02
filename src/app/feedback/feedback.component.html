@@ -1,0 +1,120 @@
+<!-- feedback.component.html -->
+
+<div class="container my-5">
+  <div class="card shadow p-4">
+    <h2 class="text-center mb-4">Kindly Give Your Feedback</h2>
+
+    <!-- Live Preview -->
+    <div class="alert alert-info">
+      <h5>Live Preview</h5>
+      <p><strong>Name:</strong> {{ userName }}</p>
+      <p><strong>Email:</strong> {{ email }}</p>
+      <p><strong>Message:</strong> {{ message }}</p>
+      <p><strong>Rating:</strong> {{ rating }}</p>
+    </div>
+
+    <!-- Feedback Form -->
+    <form>
+      <!-- Name Field -->
+      <div class="mb-3">
+        <label for="userName" class="form-label">Name:</label>
+        <input
+          type="text"
+          class="form-control"
+          id="userName"
+          [(ngModel)]="userName"
+          name="name"
+        />
+        <div class="text-danger" *ngIf="userNameTouched && userName.trim().length < 3">
+          Name must be at least 3 characters long.
+        </div>
+      </div>
+
+      <!-- Email Field -->
+      <div class="mb-3">
+        <label for="email" class="form-label">Email:</label>
+        <input
+          type="email"
+          class="form-control"
+          id="email"
+          [(ngModel)]="email"
+          name="email"
+        />
+        <div class="text-danger" *ngIf="emailTouched && !isValidEmail(email)">
+          Enter a valid email address (must include '&#64;gmail.com | &#64;email.com | &#64;outlook.com ').
+        </div>
+      </div>
+
+      <!-- Message Field -->
+      <div class="mb-3">
+        <label for="message" class="form-label">Message:</label>
+        <textarea
+          class="form-control"
+          id="message"
+          rows="3"
+          [(ngModel)]="message"
+          name="message"
+        ></textarea>
+        <div class="text-danger" *ngIf="messageTouched && message.trim().length < 10">
+          Message must be at least 10 characters long.
+        </div>
+      </div>
+
+      <!-- Rating Stars -->
+      <div class="mb-3">
+        <label class="form-label d-block">Rating:</label>
+        <div class="star-rating">
+          <i
+            *ngFor="let r of [1, 2, 3, 4, 5]"
+            class="fa-star fa-2x me-2"
+            [class.far]="(rating ?? 0) < r"
+            [class.fas]="(rating ?? 0) >= r"
+            [style.color]="(rating ?? 0) >= r ? '#ffc107' : '#ccc'"
+            (click)="rating = r"
+            style="cursor: pointer;"
+          ></i>
+        </div>
+        <div class="text-danger mt-1" *ngIf="ratingTouched && rating === null">
+          Please select a rating.
+        </div>
+
+        <!-- Emoji -->
+        <div *ngIf="rating" class="mt-2 fs-5 text-center">
+          <span>{{ getEmojiMessage(rating) }}</span>
+        </div>
+      </div>
+
+      <!-- 🔴 Error Summary -->
+      <div class="alert alert-warning text-center" *ngIf="showFieldErrors && !isValid">
+        <p *ngIf="userName.trim().length < 3">⚠️ Name must be at least 3 characters.</p>
+        <p *ngIf="!isValidEmail(email)">⚠️ Email format is incorrect.</p>
+        <p *ngIf="message.trim().length < 10">⚠️ Message must be at least 10 characters.</p>
+        <p *ngIf="rating === null">⚠️ Please choose a rating.</p>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="d-grid">
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="submitFeedback()"
+        >
+          Submit Feedback
+        </button>
+      </div>
+    </form>
+
+    <!-- Status Messages -->
+    <div
+      *ngIf="submitted || status === 'error'"
+      class="mt-4"
+      [ngClass]="{
+        'alert alert-success': status === 'success',
+        'alert alert-danger': status === 'error'
+      }"
+    >
+      <p *ngIf="status === 'success'" class="alert alert-success" >Thank you for your valuable feedback! We truly appreciate your input..</p>
+      <p *ngIf="status === 'error'">  Please double-check all fields and complete them correctly before submitting.</p>
+    </div>
+  </div>
+</div>
